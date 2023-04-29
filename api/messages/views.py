@@ -1,9 +1,8 @@
 import flask
 from . import messages_bp
 from flask import jsonify, request, abort
-import mysql.connector
 from config.config import Config, db_name
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from utils.sqlReturn import *
 
 
