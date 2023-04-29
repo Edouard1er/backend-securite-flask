@@ -2,7 +2,6 @@ import os
 import mysql.connector
 
 from dotenv import load_dotenv
-from flask_sqlalchemy import SQLAlchemy
 
 # Charger les variables d'environnement depuis le fichier .env
 load_dotenv()
@@ -29,8 +28,6 @@ class Config:
         password=db_password,
         database=db_name
     )
-    new_db = SQLAlchemy()
-    SQLALCHEMY_DATABASE_URI = f"mysql+mysqlconnector://{db_user}:{db_password}@{db_host}/{db_name}"
 
 
 class DevelopmentConfig(Config):

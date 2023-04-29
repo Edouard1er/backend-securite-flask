@@ -10,7 +10,7 @@ from api.messageForum import message_forum_bp
 from api.admin import admin_bp
 
 from flask_jwt_extended import JWTManager
-from users import users_bp
+from api.users import users_bp
 
 # Charger les variables d'environnement depuis le fichier .env
 load_dotenv()

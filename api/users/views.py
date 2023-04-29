@@ -2,7 +2,7 @@
 from . import users_bp
 from flask import jsonify, request
 from flask_bcrypt import Bcrypt
-from config import Config
+from config.config import Config
 
 bcrypt = Bcrypt()
 
