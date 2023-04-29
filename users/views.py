@@ -2,7 +2,7 @@
 from . import users_bp
 from flask import jsonify, request
 from flask_bcrypt import Bcrypt
-from config import Config
+from config.config import Config
 
 bcrypt = Bcrypt()
 
@@ -10,6 +10,8 @@ bcrypt = Bcrypt()
 db = Config.DB
 
 # Route pour créer un utilisateur
+
+
 @users_bp.route('/', methods=['POST'])
 def create_user():
     # Récupérez les données de l'utilisateur à partir de la requête
@@ -38,7 +40,7 @@ def create_user():
     db.commit()
 
     # Retournez les données de l'utilisateur créé
-    return jsonify({"status" : "OK"}), 201
+    return jsonify({"status": "OK"}), 201
 
 
 # Route pour lister tous les utilisateurs
@@ -48,7 +50,6 @@ def list_users():
     cursor = db.cursor()
     cursor.execute("SELECT nom, email, login FROM utilisateur")
     utilisateur = cursor.fetchall()
-    
 
     # Retournez les données des utilisateurs sous forme de JSON
     return jsonify(utilisateur)
