@@ -1,5 +1,5 @@
 import flask
-from . import messages_bp
+from . import admin_bp
 from flask import jsonify, request, abort
 import mysql.connector
 from config.config import Config, db_name
@@ -7,12 +7,9 @@ from flask_jwt_extended import jwt_required
 from utils.sqlReturn import *
 
 
-db = Config.DB
-
-
-@messages_bp.route('/', methods=['GET', 'POST', 'PUT', 'DELETE'])
+@admin_bp.route('/', methods=['GET', 'POST', 'PUT', 'DELETE'])
 @jwt_required()
-def get_messages():
+def get_admin():
     if request.method == 'GET':
         id = flask.request.values.get('id')
         try:
@@ -36,6 +33,13 @@ def get_messages():
             #     dataName)
             # data = (id_enseignant, id_ue)
             # resp = insert(sql=sql, data=data)
+            # TODO REMOVE later
+            message = {
+                'status': 200,
+                'message': 'sucess',
+            }
+            resp = jsonify(message)
+            resp.status_code = 200
             return resp
         except Exception as e:
             return constant.resquestErrorResponse(e)
@@ -52,6 +56,13 @@ def get_messages():
             # sql = "UPDATE {0}.cours SET id_enseignant = '{1}', id_ue = '{2}' where id_cours= {3}".format(
             #     dataName, id_enseignant, id_ue, id_cours)
             # resp = update(sql)
+            # TODO REMOVE later
+            message = {
+                'status': 200,
+                'message': 'sucess',
+            }
+            resp = jsonify(message)
+            resp.status_code = 200
             return resp
         except Exception as e:
             return constant.resquestErrorResponse(e)
@@ -61,6 +72,13 @@ def get_messages():
             # sql = "DELETE FROM {0}.cours WHERE id_cours = {1}".format(
             #     dataName, id)
             # resp = requestSelect(sql=sql)
+            # TODO REMOVE later
+            message = {
+                'status': 200,
+                'message': 'sucess',
+            }
+            resp = jsonify(message)
+            resp.status_code = 200
             return resp
         except Exception as e:
             return constant.resquestErrorResponse(e)

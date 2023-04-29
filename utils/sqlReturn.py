@@ -1,7 +1,4 @@
-import os
-from dotenv import load_dotenv
 from flask import Response, jsonify
-import mysql
 import utils.constant as constant
 from config.config import Config
 
