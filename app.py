@@ -5,6 +5,7 @@ from flask_cors import CORS
 from messages import messages_bp
 from auth import auth_bp
 from flask_jwt_extended import JWTManager
+from users import users_bp
 
 # Charger les variables d'environnement depuis le fichier .env
 load_dotenv()
@@ -22,3 +23,4 @@ jwt = JWTManager(app)
 
 app.register_blueprint(messages_bp, url_prefix='/api/messages')
 app.register_blueprint(auth_bp, url_prefix='/api/auth')
+app.register_blueprint(users_bp, url_prefix='/api/users')
