@@ -3,19 +3,10 @@ from dotenv import load_dotenv
 from flask import Response, jsonify
 import mysql
 import constant
-
-# Charger les variables d'environnement depuis le fichier .env
-load_dotenv()
-
-# Récupérer les informations de connexion à la base de données à partir des variables d'environnement
-db_user = os.getenv('DB_USER')
-db_password = os.getenv('DB_PASSWORD')
-db_host = os.getenv('DB_HOST')
-db_name = os.getenv('DB_NAME')
+from config import Config
 
 # Créer une connexion à la base de données
-cnx = mysql.connector.connect(
-    user=db_user, password=db_password, host=db_host, database=db_name)
+cnx = Config.DB
 
 
 def getOnlyData(sql) -> list:
