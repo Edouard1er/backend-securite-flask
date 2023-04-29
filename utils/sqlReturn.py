@@ -2,8 +2,8 @@ import os
 from dotenv import load_dotenv
 from flask import Response, jsonify
 import mysql
-import constant
-from config import Config
+import utils.constant as constant
+from config.config import Config
 
 # Créer une connexion à la base de données
 cnx = Config.DB

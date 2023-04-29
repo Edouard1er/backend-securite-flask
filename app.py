@@ -16,9 +16,8 @@ app = Flask(__name__)
 app.obj_msg = "app"
 CORS(app)
 
-app.config['JWT_SECRET_KEY'] = secret_key 
-jwt = JWTManager(app) 
-
+app.config['JWT_SECRET_KEY'] = secret_key
+jwt = JWTManager(app)
 
 app.register_blueprint(messages_bp, url_prefix='/api/messages')
 app.register_blueprint(auth_bp, url_prefix='/api/auth')

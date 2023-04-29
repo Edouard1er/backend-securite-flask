@@ -13,6 +13,7 @@ db_host = os.getenv('DB_HOST')
 db_name = os.getenv('DB_NAME')
 secret_key = os.getenv('SECRET_KEY')
 
+
 class Config:
     DEBUG = False
     TESTING = False
@@ -28,11 +29,14 @@ class Config:
         database=db_name
     )
 
+
 class DevelopmentConfig(Config):
     DEBUG = True
 
+
 class TestingConfig(Config):
     TESTING = True
+
 
 config = {
     'development': DevelopmentConfig,
