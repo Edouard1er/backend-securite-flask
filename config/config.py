@@ -14,6 +14,7 @@ db_host = os.getenv('DB_HOST')
 db_name = os.getenv('DB_NAME')
 secret_key = os.getenv('SECRET_KEY')
 
+
 class Config:
     DEBUG = False
     TESTING = False
@@ -31,11 +32,14 @@ class Config:
     new_db = SQLAlchemy()
     SQLALCHEMY_DATABASE_URI = f"mysql+mysqlconnector://{db_user}:{db_password}@{db_host}/{db_name}"
 
+
 class DevelopmentConfig(Config):
     DEBUG = True
 
+
 class TestingConfig(Config):
     TESTING = True
+
 
 config = {
     'development': DevelopmentConfig,
