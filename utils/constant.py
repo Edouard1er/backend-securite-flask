@@ -2,10 +2,11 @@
 from flask import Response, jsonify
 
 
-def requestRespond(data, code, m="message"):
+def requestRespond(data, code, m="sucess"):
     resp = {
         "code": code,
-        m: data,
+        "message": m,
+        "data": data,
 
     }
     return resp
@@ -13,7 +14,7 @@ def requestRespond(data, code, m="message"):
 
 def resquestErrorResponse(msg, cd=400) -> Response:
     resp = jsonify(requestRespond(
-        m="data",
+        m=msg,
         data=[], code=cd))
     resp.status_code = cd
     return resp

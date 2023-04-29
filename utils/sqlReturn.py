@@ -24,7 +24,6 @@ def getOnlyData(sql) -> list:
 def requestSelect(sql) -> Response:
     data = getOnlyData(sql)
     resp = jsonify(constant.requestRespond(
-        m="data",
         data=data, code=200))
     resp.status_code = 200
     return resp
@@ -32,53 +31,54 @@ def requestSelect(sql) -> Response:
 
 def update(sql):
     resp = jsonify(constant.requestRespond(
-        data="Table update Failed!", code=400))
+        data=[],
+        m="Table update Failed!", code=400))
     resp.status_code = 400
     try:
-        conn = cnx.connect()
-        cursor = conn.cursor()
-        cursor.execute(sql)
-        conn.commit()
-        resp = jsonify(constant.requestRespond(
-            data="Table updated successfully!", code=200))
-        resp.status_code = 200
+        with cnx.cursor() as cursor:
+            cursor.execute(sql)
+            cnx.commit()
+            resp = jsonify(constant.requestRespond(
+                data=[],
+                m="Table updated successfully!", code=200))
+            resp.status_code = 200
     finally:
         cursor.close()
-        conn.close()
     return resp
 
 
 def insert(sql, data):
     resp = jsonify(constant.requestRespond(
-        data="Table insert Failed!", code=400))
+        data=[],
+        m="Table insert Failed!", code=400))
     resp.status_code = 400
     try:
-        conn = cnx.connect()
-        cursor = conn.cursor()
-        cursor.execute(sql, data)
-        conn.commit()
-        resp = jsonify(constant.requestRespond(
-            data="Table inserted successfully!", code=200))
-        resp.status_code = 200
+        with cnx.cursor() as cursor:
+            cursor.execute(sql, data)
+            cnx.commit()
+            resp = jsonify(constant.requestRespond(
+                data=[],
+                m="Table inserted successfully!", code=200))
+            resp.status_code = 200
     finally:
         cursor.close()
-        conn.close()
+
     return resp
 
 
 def delete(sql):
     resp = jsonify(constant.requestRespond(
-        data="Table delete Failed!", code=400))
+        data=[],
+        m="Table delete Failed!", code=400))
     resp.status_code = 400
     try:
-        conn = cnx.connect()
-        cursor = conn.cursor()
-        cursor.execute(sql)
-        conn.commit()
+        with cnx.cursor() as cursor:
+            cursor.execute(sql)
+            cnx.commit()
         resp = jsonify(constant.requestRespond(
-            data="Table deleted successfully!", code=200))
+            data=[],
+            m="Table deleted successfully!", code=200))
         resp.status_code = 200
     finally:
         cursor.close()
-        conn.close()
     return resp

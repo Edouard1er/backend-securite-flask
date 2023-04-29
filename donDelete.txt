@@ -1,0 +1,69 @@
+
+import flask
+from . import users_bp
+from flask import jsonify, request, abort
+from flask_bcrypt import Bcrypt
+from config.config import Config, db_name
+from utils.sqlReturn import *
+
+
+bcrypt = Bcrypt()
+
+# Se connecter à la base de données MySQL
+db = Config.DB
+
+# Route pour créer un utilisateur
+
+
+@users_bp.route('/', methods=['POST'])
+def create_user():
+    if request.method == 'POST':
+        if not request.json:
+            abort(400)
+        try:
+            _json = request.json
+            action = _json['action']
+            if action == None:
+                return constant.resquestErrorResponse(msg="please add action", cd=500)
+            else:
+                email = _json['email']
+                pwd = _json['pwd']
+                if action == 'login':
+                    hashed_password = bcrypt.generate_password_hash(
+                        pwd).decode('utf-8')
+                    sql = "SELECT * from {0}.utilisateur where id = {1} and pwd ='{2}'".format(
+                        db_name, id, hashed_password)
+                    resp = requestSelect(sql=sql)
+                    return resp
+                if action == "register":
+                    nom = _json['nom']
+                    login = _json['login']
+                    hashed_password = bcrypt.generate_password_hash(
+                        pwd).decode('utf-8')
+                    sql = "INSERT INTO {0}.utilisateur (nom, email, login, pwd) VALUES(%s,%s,%s,%s)".format(
+                        db_name)
+                    data = [nom, email, login, hashed_password]
+                    resp = insert(sql=sql, data=data)
+                    return resp
+                else:
+                    constant.resquestErrorResponse(
+                        msg="Your action is not valide", cd=500)
+        except Exception as e:
+            return constant.resquestErrorResponse(e)
+
+    if request.method == 'PUT':
+        if not request.json:
+            abort(400)
+        try:
+            _json = request.json
+            id_user = _json['id']
+            nom = _json['nom']
+            pwd = _json['pwd']
+            hashed_password = bcrypt.generate_password_hash(
+                pwd).decode('utf-8')
+            sql = "UPDATE {0}.utilisateur SET nom = '{1}', pwd = '{2}' where id = {3}".format(
+                db_name, nom, hashed_password, id_user)
+            resp = update(sql)
+            return resp
+        except Exception as e:
+            return constant.resquestErrorResponse(e)

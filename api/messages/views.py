@@ -25,21 +25,14 @@ def get_messages():
     if request.method == 'POST':
         if not request.json:
             abort(400)
-
         try:
             _json = request.json
-            # TODO
-            # sql = "INSERT INTO {0}.cours ( id_enseignant, id_ue) VALUES(%s,%s)".format(
-            #     dataName)
-            # data = (id_enseignant, id_ue)
-            # resp = insert(sql=sql, data=data)
-            # TODO REMOVE later
-            message = {
-                'status': 200,
-                'message': 'sucess',
-            }
-            resp = jsonify(message)
-            resp.status_code = 200
+            obj_msg = _json['obj_msg']
+            contenu = _json['contenu']
+            sql = "INSERT INTO {0}.message (obj_msg, contenu) VALUES(%s,%s)".format(
+                db_name)
+            data = [obj_msg, contenu]
+            resp = insert(sql=sql, data=data)
             return resp
         except Exception as e:
             return constant.resquestErrorResponse(e)
@@ -49,36 +42,44 @@ def get_messages():
             abort(400)
         try:
             _json = request.json
-            # TODO
-            # id_cours = _json['id_cours']
-            # id_enseignant = _json['id_enseignant']
-            # id_ue = _json['id_ue']
-            # sql = "UPDATE {0}.cours SET id_enseignant = '{1}', id_ue = '{2}' where id_cours= {3}".format(
-            #     dataName, id_enseignant, id_ue, id_cours)
-            # resp = update(sql)
-            # TODO REMOVE later
-            message = {
-                'status': 200,
-                'message': 'sucess',
-            }
-            resp = jsonify(message)
-            resp.status_code = 200
+            id_message = _json['id']
+            contenu = _json['contenu']
+            sql = "UPDATE {0}.message SET contenu = '{1}' where id = {2}".format(
+                db_name, contenu, id_message)
+            resp = update(sql)
             return resp
         except Exception as e:
             return constant.resquestErrorResponse(e)
 
     if request.method == 'DELETE':
         try:
-            # sql = "DELETE FROM {0}.cours WHERE id_cours = {1}".format(
-            #     dataName, id)
-            # resp = requestSelect(sql=sql)
-            # TODO REMOVE later
-            message = {
-                'status': 200,
-                'message': 'sucess',
-            }
-            resp = jsonify(message)
-            resp.status_code = 200
-            return resp
+            id = flask.request.values.get('id')
+            if id == None:
+                message = {
+                    'status': 200,
+                    'message': 'Please add ID',
+                }
+                resp = jsonify(message)
+                resp.status_code = 200
+                return resp
+            else:
+                sql = "DELETE FROM {0}.message WHERE id = {1}".format(
+                    db_name, id)
+                resp = delete(sql=sql)
+                return resp
         except Exception as e:
+            print(e)
             return constant.resquestErrorResponse(e)
+
+# POST
+# {
+#     "obj_msg":"message 2",
+#     "contenu":"test 2 "
+# }
+
+# PUT
+# {
+#     "id":2,
+#     "contenu":"test second"
+
+# }

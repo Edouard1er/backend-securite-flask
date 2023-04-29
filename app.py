@@ -1,5 +1,5 @@
 from datetime import timedelta
-from flask import Flask
+from flask import Flask, jsonify, request
 from dotenv import load_dotenv
 import os
 from flask_cors import CORS
@@ -10,7 +10,7 @@ from api.messageForum import message_forum_bp
 from api.admin import admin_bp
 
 from flask_jwt_extended import JWTManager
-from users import users_bp
+from api.users import users_bp
 
 # Charger les variables d'environnement depuis le fichier .env
 load_dotenv()
@@ -33,3 +33,29 @@ app.register_blueprint(users_bp, url_prefix='/api/users')
 app.register_blueprint(forum_bp, url_prefix='/api/forum')
 app.register_blueprint(message_forum_bp, url_prefix='/api/message_forum')
 app.register_blueprint(admin_bp, url_prefix='/api/admin')
+
+
+@app.errorhandler(404)
+def not_found(error=None):
+    message = {
+        'status': 404,
+        'message': 'Not Found: ' + request.url,
+        'data': [],
+
+    }
+    resp = jsonify(message)
+    resp.status_code = 404
+    return resp
+
+
+@app.errorhandler(500)
+def not_found(error=None):
+    message = {
+        'status': 500,
+        'message': "Votre requeste n'est pas correcte",
+        'data': [],
+
+    }
+    resp = jsonify(message)
+    resp.status_code = 404
+    return resp

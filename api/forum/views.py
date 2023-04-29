@@ -13,9 +13,9 @@ def get_forum():
         id = flask.request.values.get('id')
         try:
             if id == None:
-                sql = "SELECT * from {0}.message".format(db_name)
+                sql = "SELECT * from {0}.forum".format(db_name)
             else:
-                sql = "SELECT * from {0}.message where id = {1}".format(
+                sql = "SELECT * from {0}.forum where id = {1}".format(
                     db_name, id)
             resp = requestSelect(sql=sql)
             return resp
@@ -24,16 +24,16 @@ def get_forum():
     if request.method == 'POST':
         if not request.json:
             abort(400)
-
         try:
             _json = request.json
-            # TODO
-            # sql = "INSERT INTO {0}.cours ( id_enseignant, id_ue) VALUES(%s,%s)".format(
-            #     dataName)
-            # data = (id_enseignant, id_ue)
-            # resp = insert(sql=sql, data=data)
+            descript = _json['description']
+            sql = "INSERT INTO {0}.forum (description) VALUES(%s)".format(
+                db_name)
+            data = [descript]
+            resp = insert(sql=sql, data=data)
             return resp
         except Exception as e:
+            print(e)
             return constant.resquestErrorResponse(e)
 
     if request.method == 'PUT':
@@ -41,37 +41,45 @@ def get_forum():
             abort(400)
         try:
             _json = request.json
-
-            # TODO
-            # id_cours = _json['id_cours']
-            # id_enseignant = _json['id_enseignant']
-            # id_ue = _json['id_ue']
-            # sql = "UPDATE {0}.cours SET id_enseignant = '{1}', id_ue = '{2}' where id_cours= {3}".format(
-            #     dataName, id_enseignant, id_ue, id_cours)
-            # resp = update(sql)
-            # TODO REMOVE later
-            message = {
-                'status': 200,
-                'message': 'sucess',
-            }
-            resp = jsonify(message)
-            resp.status_code = 200
+            id_forum = _json['id']
+            descript = _json['description']
+            sql = "UPDATE {0}.forum SET description = '{1}' where id = {2}".format(
+                db_name, descript, id_forum)
+            resp = update(sql)
             return resp
         except Exception as e:
             return constant.resquestErrorResponse(e)
 
     if request.method == 'DELETE':
         try:
-            # sql = "DELETE FROM {0}.cours WHERE id_cours = {1}".format(
-            #     dataName, id)
-            # resp = requestSelect(sql=sql)
-            # TODO REMOVE later
-            message = {
-                'status': 200,
-                'message': 'sucess',
-            }
-            resp = jsonify(message)
-            resp.status_code = 200
-            return resp
+            id = flask.request.values.get('id')
+            if id == None:
+                message = {
+                    'status': 200,
+                    'message': 'Please add ID',
+                }
+                resp = jsonify(message)
+                resp.status_code = 200
+                return resp
+            else:
+                sql = "DELETE FROM {0}.forum WHERE id = {1}".format(
+                    db_name, id)
+                resp = delete(sql=sql)
+                return resp
         except Exception as e:
+            print(e)
             return constant.resquestErrorResponse(e)
+
+
+#
+# PUT  body
+# {
+#     "id":1,
+#     "description":"here 1"
+# }
+
+
+# POST, DELETE  body
+# {
+#     "description":"here 1"
+# }
