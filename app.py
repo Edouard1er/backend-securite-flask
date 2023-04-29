@@ -1,11 +1,7 @@
-from flask import Flask, request, jsonify, json, abort
+from flask import Flask, request, jsonify, abort
 import flask
-import mysql.connector
-from dotenv import load_dotenv
-import os
 from flask_cors import CORS
 from sqlReturn import *
-
 
 # Créer une application Flask
 app = Flask(__name__)
@@ -17,7 +13,6 @@ CORS(app)
 
 @app.route("/api/message/", methods=['GET', 'POST', 'PUT', 'DELETE'])
 def getMessage():
-
     if request.method == 'GET':
         try:
             id = flask.request.values.get('id')
@@ -46,8 +41,8 @@ def getMessage():
         except Exception as e:
             return constant.resquestErrorResponse(e)
 
-# ---------------------------------------------------NO FOUND ERROR ---------------------------------------------------------------------------------------------
 
+# ---------------------------------------------------NO FOUND ERROR ---------------------------------------------------------------------------------------------
 
 @app.errorhandler(404)
 def not_found(error=None):
