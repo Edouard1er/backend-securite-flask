@@ -32,7 +32,7 @@ def requestSelect(sql) -> Response:
 def update(sql):
     resp = jsonify(constant.requestRespond(
         data=[],
-        m="Table update Failed!", code=400))
+        m="Data update Failed!", code=400))
     resp.status_code = 400
     try:
         with cnx.cursor() as cursor:
@@ -40,7 +40,7 @@ def update(sql):
             cnx.commit()
             resp = jsonify(constant.requestRespond(
                 data=[],
-                m="Table updated successfully!", code=200))
+                m="Data updated successfully!", code=200))
             resp.status_code = 200
     finally:
         cursor.close()
@@ -50,7 +50,7 @@ def update(sql):
 def insert(sql, data):
     resp = jsonify(constant.requestRespond(
         data=[],
-        m="Table insert Failed!", code=400))
+        m="Data insert Failed!", code=400))
     resp.status_code = 400
     try:
         with cnx.cursor() as cursor:
@@ -58,7 +58,7 @@ def insert(sql, data):
             cnx.commit()
             resp = jsonify(constant.requestRespond(
                 data=[],
-                m="Table inserted successfully!", code=200))
+                m="Data inserted successfully!", code=200))
             resp.status_code = 200
     finally:
         cursor.close()
@@ -69,7 +69,7 @@ def insert(sql, data):
 def delete(sql):
     resp = jsonify(constant.requestRespond(
         data=[],
-        m="Table delete Failed!", code=400))
+        m="Data delete Failed!", code=400))
     resp.status_code = 400
     try:
         with cnx.cursor() as cursor:
@@ -77,7 +77,7 @@ def delete(sql):
             cnx.commit()
         resp = jsonify(constant.requestRespond(
             data=[],
-            m="Table deleted successfully!", code=200))
+            m="Data deleted successfully!", code=200))
         resp.status_code = 200
     finally:
         cursor.close()

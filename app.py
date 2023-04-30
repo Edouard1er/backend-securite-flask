@@ -8,6 +8,7 @@ from api.auth import auth_bp
 from api.forum import forum_bp
 from api.messageForum import message_forum_bp
 from api.admin import admin_bp
+from api.categorieForum import categorie_forum_bp
 
 from flask_jwt_extended import JWTManager
 from api.users import users_bp
@@ -30,8 +31,9 @@ jwt = JWTManager(app)
 app.register_blueprint(messages_bp, url_prefix='/api/messages')
 app.register_blueprint(auth_bp, url_prefix='/api/auth')
 app.register_blueprint(users_bp, url_prefix='/api/users')
-app.register_blueprint(forum_bp, url_prefix='/api/forum')
-app.register_blueprint(message_forum_bp, url_prefix='/api/message_forum')
+app.register_blueprint(forum_bp, url_prefix='/api/forums')
+app.register_blueprint(message_forum_bp, url_prefix='/api/forum/comments')
+app.register_blueprint(categorie_forum_bp, url_prefix='/api/forum/categories')
 app.register_blueprint(admin_bp, url_prefix='/api/admin')
 
 

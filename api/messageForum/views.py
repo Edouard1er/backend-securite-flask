@@ -11,11 +11,14 @@ from utils.sqlReturn import *
 def get_message_forum():
     if request.method == 'GET':
         id = flask.request.values.get('id')
+        id_forum = flask.request.values.get('id_forum')
         try:
-            if id == None:
-                sql = "SELECT * from {0}.message_forum".format(db_name)
+            if id == None and id_forum == None:
+                sql = "SELECT cf.*, u.name, u.imageUrl, u.filiere, u.promotion from {0}.comment_forum cf INNER JOIN {0}.utilisateur u ON (cf.id_user=u.id) WHERE cf.statut='1'".format(db_name)
+            elif id == None and id_forum != None:
+                sql = "SELECT cf.*, u.name, u.imageUrl, u.filiere, u.promotion from {0}.comment_forum cf INNER JOIN {0}.utilisateur u ON (cf.id_user=u.id) WHERE cf.statut='1' AND cf.id_forum={1}".format(db_name, id_forum)
             else:
-                sql = "SELECT * from {0}.message_forum where id = {1}".format(
+                sql = "SELECT cf.*, u.name, u.imageUrl, u.filiere, u.promotion from {0}.comment_forum cf INNER JOIN {0}.utilisateur u ON (cf.id_user=u.id) WHERE cf.id = {1}".format(
                     db_name, id)
             resp = requestSelect(sql=sql)
             return resp
@@ -26,13 +29,12 @@ def get_message_forum():
             abort(400)
         try:
             _json = request.json
-            titre = _json["titre"]
             contenu = _json["contenu"]
-            id_frm = _json["id_frm"]
+            id_frm = _json["id_forum"]
             id_user = _json['id_user']
-            sql = "INSERT INTO {0}.message_forum (titre, contenu, id_frm, id_user) VALUES(%s,%s,%s,%s)".format(
+            sql = "INSERT INTO {0}.comment_forum (contenu, id_forum, id_user) VALUES(%s,%s,%s)".format(
                 db_name)
-            data = [titre, contenu, id_frm, id_user]
+            data = [contenu, id_frm, id_user]
             resp = insert(sql=sql, data=data)
             return resp
         except Exception as e:
@@ -46,7 +48,7 @@ def get_message_forum():
             _json = request.json
             id_message_forum = _json['id']
             contenu = _json['contenu']
-            sql = "UPDATE {0}.message_forum SET contenu = '{1}' where id = {2}".format(
+            sql = "UPDATE {0}.comment_forum SET contenu = '{1}' where id = {2}".format(
                 db_name, contenu, id_message_forum)
             resp = update(sql)
             return resp
@@ -65,7 +67,7 @@ def get_message_forum():
                 resp.status_code = 200
                 return resp
             else:
-                sql = "DELETE FROM {0}.message_forum WHERE id = {1}".format(
+                sql = "UPDATE {0}.comment_forum SET statut='0' WHERE id = {1}".format(
                     db_name, id)
                 resp = delete(sql=sql)
                 return resp
