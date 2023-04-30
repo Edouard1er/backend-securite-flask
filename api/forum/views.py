@@ -27,12 +27,12 @@ def get_forum():
         try:
             _json = request.json
             contenu = _json['contenu']
-            categorie = _json['categorie']
+            code_categorie = _json['code_categorie']
             id_user = _json['id_user']
             titre = _json['titre']
-            sql = "INSERT INTO {0}.forum (id_user, titre, categorie, contenu) VALUES(%s,%s,%s,%s)".format(
+            sql = "INSERT INTO {0}.forum (id_user, titre, code_categorie, contenu) VALUES(%s,%s,%s,%s)".format(
                 db_name)
-            data = [id_user, titre, categorie, contenu]
+            data = [id_user, titre, code_categorie, contenu]
             resp = insert(sql=sql, data=data)
             return resp
         except Exception as e:
@@ -46,11 +46,11 @@ def get_forum():
             _json = request.json
             id_forum = _json['id']
             contenu = _json['contenu']
-            categorie = _json['categorie']
+            code_categorie = _json['code_categorie']
             id_user = _json['id_user']
             titre = _json['titre']
-            sql = "UPDATE {0}.forum SET contenu = '{2}', categorie = '{3}', id_user = '{4}', titre = '{5}' where id = {1}".format(
-                db_name, id_forum, contenu, categorie, id_user, titre)
+            sql = "UPDATE {0}.forum SET contenu = '{2}', code_categorie = '{3}', id_user = '{4}', titre = '{5}' where id = {1}".format(
+                db_name, id_forum, contenu, code_categorie, id_user, titre)
             resp = update(sql)
             return resp
         except Exception as e:
