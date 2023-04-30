@@ -70,15 +70,3 @@ def get_messages():
             print(e)
             return constant.resquestErrorResponse(e)
 
-# POST
-# {
-#     "code_categorie":"categorie_forum 2",
-#     "libelle_categorie":"test 2 "
-# }
-
-# PUT
-# {
-#     "code_categorie":2,
-#     "libelle_categorie":"test second"
-
-# }

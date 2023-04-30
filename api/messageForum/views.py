@@ -74,19 +74,3 @@ def get_message_forum():
         except Exception as e:
             print(e)
             return constant.resquestErrorResponse(e)
-
-
-# POST Body
-# {
-#     "titre":"test 2",
-#     "contenu":"2 bla bla bla",
-#     "id_frm": 2,
-#     "id_user":2
-# }
-
-# PUT
-# {
-#     "id":2,
-#     "contenu":"test second "
-
-# }
