@@ -27,6 +27,7 @@ Ouvrez le dossier du projet dans Visual Studio Code
 Si vous voulez creer un environnment virtuel pour installer les dependance, lancez ces deux commandes avant d'installer les dependances:
 
     pip install virtualenv
+    python -m venv env
     env\Scripts\activate
 
 Installez les dépendances de l'application en exécutant : 
