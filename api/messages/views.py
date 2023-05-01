@@ -10,13 +10,11 @@ from utils.sqlReturn import *
 @jwt_required()
 def get_messages():
     if request.method == 'GET':
-        id = flask.request.values.get('id')
+        idEmeteur  = flask.request.values.get('idEmeteur')
+        idRecepteur = flask.request.values.get('idRecepteur')
         try:
-            if id == None:
-                sql = "SELECT * from {0}.message".format(db_name)
-            else:
-                sql = "SELECT * from {0}.message where id = {1}".format(
-                    db_name, id)
+            sql = "SELECT m.idEmeteur AS OWNER, m.content, m.time, m.read FROM {0}.message m WHERE ((m.idEmeteur={1} AND m.idRecepteur={2}) OR (m.idRecepteur={1} AND m.idEmeteur={2})) AND m.statut ='1' ORDER BY m.time".format(db_name, idEmeteur, idRecepteur)
+            print(sql)
             resp = requestSelect(sql=sql)
             return resp
         except Exception as e:
@@ -26,11 +24,12 @@ def get_messages():
             abort(400)
         try:
             _json = request.json
-            obj_msg = _json['obj_msg']
-            contenu = _json['contenu']
-            sql = "INSERT INTO {0}.message (obj_msg, contenu) VALUES(%s,%s)".format(
+            idEmeteur = _json['idEmeteur']
+            idRecepteur = _json['idRecepteur']
+            content = _json['content']
+            sql = "INSERT INTO {0}.message (idEmeteur, idRecepteur, content) VALUES(%s,%s,%s)".format(
                 db_name)
-            data = [obj_msg, contenu]
+            data = [idEmeteur, idRecepteur, content]
             resp = insert(sql=sql, data=data)
             return resp
         except Exception as e:
@@ -42,9 +41,9 @@ def get_messages():
         try:
             _json = request.json
             id_message = _json['id']
-            contenu = _json['contenu']
-            sql = "UPDATE {0}.message SET contenu = '{1}' where id = {2}".format(
-                db_name, contenu, id_message)
+            content = _json['content']
+            sql = "UPDATE {0}.message SET content = '{1}' where id = {2}".format(
+                db_name, content, id_message)
             resp = update(sql)
             return resp
         except Exception as e:
@@ -62,22 +61,26 @@ def get_messages():
                 resp.status_code = 200
                 return resp
             else:
-                sql = "DELETE FROM {0}.message WHERE id = {1}".format(
+                sql = "UPDATE {0}.message SET statut='0' WHERE id = {1}".format(
                     db_name, id)
                 resp = delete(sql=sql)
                 return resp
         except Exception as e:
             return constant.resquestErrorResponse(e)
 
-# POST
-# {
-#     "obj_msg":"message 2",
-#     "contenu":"test 2 "
-# }
-
-# PUT
-# {
-#     "id":2,
-#     "contenu":"test second"
-
-# }
+@messages_bp.route('/read', methods=['GET', 'POST', 'PUT', 'DELETE'])
+@jwt_required()
+def update_messages_read():
+    if not request.json:
+        abort(400)
+    try:
+        _json = request.json
+        idEmeteur = _json['idEmeteur']
+        idRecepteur = _json['idRecepteur']
+        sql = "UPDATE {0}.message m SET m.read='1' where idEmeteur={1} AND idRecepteur={2}".format(
+            db_name, idEmeteur, idRecepteur )
+        resp = update(sql)
+        print(sql)
+        return resp
+    except Exception as e:
+        return constant.resquestErrorResponse(e)
