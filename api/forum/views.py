@@ -13,9 +13,9 @@ def get_forum():
         id = flask.request.values.get('id')
         try:
             if id == None:
-                sql = "SELECT f.*, cf.libelle_categorie, u.name, u.imageUrl, u.filiere, u.promotion from {0}.forum f INNER JOIN {0}.categorie_forum cf ON (f.code_categorie=cf.code_categorie) INNER JOIN {0}.utilisateur u ON (f.id_user=u.id)  WHERE f.statut='1' AND cf.statut='1'".format(db_name)
+                sql = "SELECT f.*, cf.libelle_categorie, cf.color, u.pays, u.name, u.imageUrl, u.filiere, u.promotion from {0}.forum f INNER JOIN {0}.categorie_forum cf ON (f.code_categorie=cf.code_categorie) INNER JOIN {0}.utilisateur u ON (f.id_user=u.id)  WHERE f.statut='1' AND cf.statut='1'".format(db_name)
             else:
-                sql = "SELECT f.*, cf.libelle_categorie, u.name, u.imageUrl, u.filiere, u.promotion from {0}.forum f INNER JOIN {0}.categorie_forum cf ON (f.code_categorie=cf.code_categorie) INNER JOIN {0}.utilisateur u ON (f.id_user=u.id)  WHERE f.id = {1}".format(
+                sql = "SELECT f.*, cf.libelle_categorie, cf.color, u.pays, u.name, u.imageUrl, u.filiere, u.promotion from {0}.forum f INNER JOIN {0}.categorie_forum cf ON (f.code_categorie=cf.code_categorie) INNER JOIN {0}.utilisateur u ON (f.id_user=u.id)  WHERE f.id = {1}".format(
                     db_name, id)
             resp = requestSelect(sql=sql)
             return resp
