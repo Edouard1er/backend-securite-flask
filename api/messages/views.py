@@ -67,7 +67,6 @@ def get_messages():
                 resp = delete(sql=sql)
                 return resp
         except Exception as e:
-            print(e)
             return constant.resquestErrorResponse(e)
 
 # POST

@@ -17,7 +17,6 @@ def get_message_forum():
             else:
                 sql = "SELECT t.*, u.name, u.imageUrl, u.filiere, u.promotion from {0}.temoignage t INNER JOIN {0}.utilisateur u ON (t.id_user=u.id) WHERE t.id = {1}".format(
                     db_name, id)
-            print(sql)
             resp = requestSelect(sql=sql)
             return resp
         except Exception as e:
@@ -36,7 +35,6 @@ def get_message_forum():
             resp = insert(sql=sql, data=data)
             return resp
         except Exception as e:
-            print(e)
             return constant.resquestErrorResponse(e)
 
     if request.method == 'PUT':
@@ -71,5 +69,4 @@ def get_message_forum():
                 resp = delete(sql=sql)
                 return resp
         except Exception as e:
-            print(e)
             return constant.resquestErrorResponse(e)

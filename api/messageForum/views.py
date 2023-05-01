@@ -38,7 +38,6 @@ def get_message_forum():
             resp = insert(sql=sql, data=data)
             return resp
         except Exception as e:
-            print(e)
             return constant.resquestErrorResponse(e)
 
     if request.method == 'PUT':
@@ -72,5 +71,4 @@ def get_message_forum():
                 resp = delete(sql=sql)
                 return resp
         except Exception as e:
-            print(e)
             return constant.resquestErrorResponse(e)

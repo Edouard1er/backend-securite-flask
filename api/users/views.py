@@ -131,7 +131,6 @@ def change_password():
     cursor = db.cursor()
     cursor.execute("SELECT pwd FROM utilisateur WHERE login=%s", (login,))
     user = cursor.fetchone()
-    print(user)
     if not bcrypt.check_password_hash(user[0], old_password):
         return constant.resquestErrorResponse(msg="Le mot de passe actuel est incorrect", cd=400)
 
