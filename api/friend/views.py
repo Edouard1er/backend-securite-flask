@@ -22,12 +22,16 @@ def get_message_forum():
                         listFriend.append(item["user_2"])
                     else:
                         listFriend.append(item["user_1"])
-                idString = str(tuple(listFriend))
+                if len(listFriend) == 1:
+                    idString = "(" + str(listFriend[0]) + ")"
+                else:
+                    idString = str(tuple(listFriend))
             else:
                 idString = "('')"
             
             sql = "SELECT u.id, u.online, u.email, u.name, u.imageUrl, u.filiere, u.promotion, u.login from {0}.utilisateur u WHERE u.statut='1' AND u.id IN {1}".format(
                 db_name, idString)
+            print(sql)
             resp = requestSelect(sql=sql)
             return resp
         except Exception as e:
