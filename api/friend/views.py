@@ -26,7 +26,7 @@ def get_message_forum():
             else:
                 idString = "('')"
             
-            sql = "SELECT u.id, u.email, u.name, u.imageUrl, u.filiere, u.promotion, u.login from {0}.utilisateur u WHERE u.statut='1' AND u.id IN {1}".format(
+            sql = "SELECT u.id, u.online, u.email, u.name, u.imageUrl, u.filiere, u.promotion, u.login from {0}.utilisateur u WHERE u.statut='1' AND u.id IN {1}".format(
                 db_name, idString)
             resp = requestSelect(sql=sql)
             return resp
