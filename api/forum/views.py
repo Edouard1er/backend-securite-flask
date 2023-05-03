@@ -73,17 +73,3 @@ def get_forum():
                 return resp
         except Exception as e:
             return constant.resquestErrorResponse(e)
-
-
-#
-# PUT  body
-# {
-#     "id":1,
-#     "description":"here 1"
-# }
-
-
-# POST, DELETE  body
-# {
-#     "description":"here 1"
-# }

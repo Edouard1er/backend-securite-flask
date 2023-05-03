@@ -14,7 +14,6 @@ def get_messages():
         idRecepteur = flask.request.values.get('idRecepteur')
         try:
             sql = "SELECT m.idEmeteur AS OWNER, m.content, m.time, m.read FROM {0}.message m WHERE ((m.idEmeteur={1} AND m.idRecepteur={2}) OR (m.idRecepteur={1} AND m.idEmeteur={2})) AND m.statut ='1' ORDER BY m.time".format(db_name, idEmeteur, idRecepteur)
-            print(sql)
             resp = requestSelect(sql=sql)
             return resp
         except Exception as e:
@@ -80,7 +79,6 @@ def update_messages_read():
         sql = "UPDATE {0}.message m SET m.read='1' where idEmeteur={1} AND idRecepteur={2}".format(
             db_name, idEmeteur, idRecepteur )
         resp = update(sql)
-        print(sql)
         return resp
     except Exception as e:
         return constant.resquestErrorResponse(e)

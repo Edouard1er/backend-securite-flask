@@ -10,17 +10,35 @@ import flask
 from flask import jsonify, request, abort
 import re
 
+import mysql.connector
+
+from dotenv import load_dotenv
+import os
+
+# Charger les variables d'environnement depuis le fichier .env
+load_dotenv()
+
+db_user = os.getenv('DB_USER')
+db_password = os.getenv('DB_PASSWORD')
+db_host = os.getenv('DB_HOST')
+db_name = os.getenv('DB_NAME')
+secret_key = os.getenv('SECRET_KEY')
 
 bcrypt = Bcrypt()
-
-# Se connecter à la base de données MySQL
-db = Config.DB
 
 # Route pour créer un utilisateur
 
 
 @users_bp.route('/', methods=['POST'])
 def create_user():
+    # Se connecter à la base de données MySQL
+    db = mysql.connector.connect(
+        host=db_host,
+        user=db_user,
+        password=db_password,
+        database=db_name
+    )
+    
     # Récupérez les données de l'utilisateur à partir de la requête
     name = request.json.get('name')
     email = request.json.get('email')
@@ -101,6 +119,14 @@ def update_profile():
 @users_bp.route('/password', methods=['PUT'])
 @jwt_required()
 def change_password():
+    # Se connecter à la base de données MySQL
+    db = mysql.connector.connect(
+        host=db_host,
+        user=db_user,
+        password=db_password,
+        database=db_name
+    )
+    
     login = get_jwt_identity()
     if not request.json:
         abort(400)

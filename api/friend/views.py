@@ -31,7 +31,6 @@ def get_message_forum():
             
             sql = "SELECT u.id, u.online, u.email, u.name, u.imageUrl, u.filiere, u.promotion, u.login from {0}.utilisateur u WHERE u.statut='1' AND u.id IN {1}".format(
                 db_name, idString)
-            print(sql)
             resp = requestSelect(sql=sql)
             return resp
         except Exception as e:

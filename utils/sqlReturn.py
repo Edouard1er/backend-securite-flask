@@ -1,12 +1,31 @@
 from flask import Response, jsonify
 import utils.constant as constant
 from config.config import Config
+import mysql.connector
+
+from dotenv import load_dotenv
+import os
+
+# Charger les variables d'environnement depuis le fichier .env
+load_dotenv()
+
+db_user = os.getenv('DB_USER')
+db_password = os.getenv('DB_PASSWORD')
+db_host = os.getenv('DB_HOST')
+db_name = os.getenv('DB_NAME')
+secret_key = os.getenv('SECRET_KEY')
 
 # Créer une connexion à la base de données
-cnx = Config.DB
+
 
 
 def getOnlyData(sql) -> list:
+    cnx = mysql.connector.connect(
+        host=db_host,
+        user=db_user,
+        password=db_password,
+        database=db_name
+    )
     data = []
     try:
         with cnx.cursor() as cursor:
@@ -30,6 +49,12 @@ def requestSelect(sql) -> Response:
 
 
 def update(sql):
+    cnx = mysql.connector.connect(
+        host=db_host,
+        user=db_user,
+        password=db_password,
+        database=db_name
+    )
     resp = jsonify(constant.requestRespond(
         data=[],
         m="Data update Failed!", code=400))
@@ -48,6 +73,12 @@ def update(sql):
 
 
 def insert(sql, data):
+    cnx = mysql.connector.connect(
+        host=db_host,
+        user=db_user,
+        password=db_password,
+        database=db_name
+    )
     resp = jsonify(constant.requestRespond(
         data=[],
         m="Data insert Failed!", code=400))
@@ -67,6 +98,12 @@ def insert(sql, data):
 
 
 def delete(sql):
+    cnx = mysql.connector.connect(
+        host=db_host,
+        user=db_user,
+        password=db_password,
+        database=db_name
+    )
     resp = jsonify(constant.requestRespond(
         data=[],
         m="Data delete Failed!", code=400))
