@@ -5,6 +5,8 @@ import mysql.connector
 
 from dotenv import load_dotenv
 import os
+from flask_jwt_extended import get_jwt_identity
+
 
 # Charger les variables d'environnement depuis le fichier .env
 load_dotenv()
@@ -119,3 +121,12 @@ def delete(sql):
     finally:
         cursor.close()
     return resp
+
+def getCurrentUserId():
+    current = get_jwt_identity()
+    sql = "SELECT id FROM {0}.utilisateur WHERE login='{1}'".format(db_name, current)
+    id = getOnlyData(sql)
+    response = ""
+    if(len(id) == 1):
+        response = id[0]["id"]
+    return response

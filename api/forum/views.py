@@ -4,6 +4,7 @@ from flask import jsonify, request, abort
 from config.config import db_name
 from flask_jwt_extended import jwt_required
 from utils.sqlReturn import *
+import json
 
 
 @forum_bp.route('/', methods=['GET', 'POST', 'PUT', 'DELETE'])
@@ -58,6 +59,7 @@ def get_forum():
     if request.method == 'DELETE':
         try:
             id = flask.request.values.get('id')
+            id_user = getCurrentUserId()
             if id == None:
                 message = {
                     'status': 200,
@@ -67,9 +69,43 @@ def get_forum():
                 resp.status_code = 200
                 return resp
             else:
-                sql = "UPDATE {0}.forum SET statut = '0' WHERE id = {1}".format(
-                    db_name, id)
+                sql = "UPDATE {0}.forum SET statut = '0' WHERE id = {1} AND id_user={2}".format(
+                    db_name, id, id_user)
                 resp = delete(sql=sql)
                 return resp
         except Exception as e:
             return constant.resquestErrorResponse(e)
+
+# Route pour modifier les like
+@forum_bp.route('/like', methods=['PUT'])
+@jwt_required()
+def update_profile():
+    id_user = getCurrentUserId()
+    
+    if not request.json:
+        abort(400)
+    try:
+        _json = request.json
+        id = _json['id'] or ""
+        
+        sql = "SELECT list_like FROM {0}.forum WHERE id={1}".format(db_name, id)
+        list_like_str = getOnlyData(sql)
+        list_like = []
+        if len(list_like_str) == 1:
+            list_like_str = list_like_str[0]["list_like"]
+        else:
+            list_like_str = ""
+        if list_like_str and len(list_like_str) > 0:
+            list_like = json.loads(list_like_str)
+            if id_user in list_like:
+                list_like.remove(id_user)
+            else:
+                list_like.append(id_user)
+            list_like_str = json.dumps(list_like)
+        
+        sql = "UPDATE {0}.forum SET list_like = '{1}' where id = '{2}'".format(
+            db_name, list_like, id)
+        resp = update(sql)
+        return resp
+    except Exception as e:
+        return constant.resquestErrorResponse(e)
