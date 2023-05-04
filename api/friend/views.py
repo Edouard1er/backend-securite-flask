@@ -40,8 +40,8 @@ def get_message_forum():
             abort(400)
         try:
             _json = request.json
-            user_1 = _json["user_1"]
-            user_2 = _json["user_2"]
+            user_1 = _json["user_1"] or getCurrentUserId()
+            user_2 = _json["user_2"] or getCurrentUserId()
             sql = "INSERT INTO {0}.friend (user_1, user_2) VALUES(%s,%s)".format(
                 db_name)
             data = [user_1, user_2]
@@ -52,8 +52,8 @@ def get_message_forum():
 
     if request.method == 'DELETE':
         try:
-            user_1 = flask.request.values.get('user_1')
-            user_2 = flask.request.values.get('user_2')
+            user_1 = flask.request.values.get('user_1') or getCurrentUserId()
+            user_2 = flask.request.values.get('user_2') or getCurrentUserId()
             if user_1 == None or user_2 == None:
                 message = {
                     'status': 200,
