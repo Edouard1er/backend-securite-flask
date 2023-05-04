@@ -61,8 +61,9 @@ def get_messages():
                 resp.status_code = 200
                 return resp
             else:
-                sql = "UPDATE {0}.message SET statut='0' WHERE id = {1}".format(
-                    db_name, id)
+                idEmeteur = getCurrentUserId()
+                sql = "UPDATE {0}.message SET statut='0' WHERE id = {1} AND idEmeteur={2}".format(
+                    db_name, id, idEmeteur)
                 resp = delete(sql=sql)
                 return resp
         except Exception as e:

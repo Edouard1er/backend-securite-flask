@@ -12,9 +12,21 @@ import json
 def get_forum():
     if request.method == 'GET':
         id = flask.request.values.get('id')
+        tri = flask.request.values.get('tri')
+        code_categorie = flask.request.values.get('code_categorie')
+        andSql = ""
+        if code_categorie and len(code_categorie) > 0:
+            andSql = "AND f.code_categorie='{0}'".format(code_categorie)
+        orderBy = "comment_max_date"
+        if tri == "new_forum" :
+            orderBy = "createdAt"
+        elif tri == "most_reply":
+            orderBy = "comment_number"
+        else:
+            orderBy = "comment_max_date"
         try:
             if id == None:
-                sql = "SELECT f.*, cf.libelle_categorie, cf.color, u.pays, u.name, u.imageUrl, u.filiere, u.promotion from {0}.forum f INNER JOIN {0}.categorie_forum cf ON (f.code_categorie=cf.code_categorie) INNER JOIN {0}.utilisateur u ON (f.id_user=u.id)  WHERE f.statut='1' AND cf.statut='1'".format(db_name)
+                sql = "SELECT f.*, cf.libelle_categorie, cf.color, u.pays, u.name, u.imageUrl, u.filiere, u.promotion, COUNT(cof.id) AS comment_number, MAX(cof.createdAt) AS comment_max_date from {0}.forum f INNER JOIN {0}.categorie_forum cf ON (f.code_categorie=cf.code_categorie) INNER JOIN {0}.utilisateur u ON (f.id_user=u.id) LEFT JOIN comment_forum cof ON (f.id=cof.id_forum AND cof.statut='1')  WHERE f.statut='1' AND cf.statut='1' {2} GROUP BY f.id ORDER BY {1} DESC".format(db_name, orderBy, andSql)
             else:
                 sql = "SELECT f.*, cf.libelle_categorie, cf.color, u.pays, u.name, u.imageUrl, u.filiere, u.promotion from {0}.forum f INNER JOIN {0}.categorie_forum cf ON (f.code_categorie=cf.code_categorie) INNER JOIN {0}.utilisateur u ON (f.id_user=u.id)  WHERE f.id = {1}".format(
                     db_name, id)
