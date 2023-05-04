@@ -41,12 +41,13 @@ def get_message_forum():
         if not request.json:
             abort(400)
         try:
+            id_user = getCurrentUserId()
             _json = request.json
             id_temoignage = _json['id']
             text = _json['text']
             rating = _json['rating']
-            sql = "UPDATE {0}.temoignage SET text = '{1}', rating={3} where id = {2}".format(
-                db_name, text, id_temoignage, rating)
+            sql = "UPDATE {0}.temoignage SET text = '{1}', rating={3} where id = {2} AND id_user={4}".format(
+                db_name, text, id_temoignage, rating, id_user)
             resp = update(sql)
             return resp
         except Exception as e:
@@ -55,6 +56,7 @@ def get_message_forum():
     if request.method == 'DELETE':
         try:
             id = flask.request.values.get('id')
+            id_user = getCurrentUserId()
             if id == None:
                 message = {
                     'status': 200,
@@ -64,8 +66,8 @@ def get_message_forum():
                 resp.status_code = 200
                 return resp
             else:
-                sql = "UPDATE {0}.temoignage SET statut='0' WHERE id = {1}".format(
-                    db_name, id)
+                sql = "UPDATE {0}.temoignage SET statut='0' WHERE id = {1} AND id_user={2}".format(
+                    db_name, id, id_user)
                 resp = delete(sql=sql)
                 return resp
         except Exception as e:
