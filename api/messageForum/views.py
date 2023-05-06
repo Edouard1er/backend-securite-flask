@@ -49,8 +49,10 @@ def get_message_forum():
             _json = request.json
             id_message_forum = _json['id']
             contenu = _json['contenu']
-            sql = "UPDATE {0}.comment_forum SET contenu = '{1}' where id = {2}".format(
-                db_name, contenu, id_message_forum)
+            userInfo = getCurrentUserInfo()
+            id_user = userInfo["id"]
+            sql = "UPDATE {0}.comment_forum SET contenu = '{1}' where id = {2} AND id_user={3}".format(
+                db_name, contenu, id_message_forum, id_user)
             resp = update(sql)
             return resp
         except Exception as e:
@@ -59,7 +61,13 @@ def get_message_forum():
     if request.method == 'DELETE':
         try:
             id = flask.request.values.get('id')
-            id_user = getCurrentUserId()
+            userInfo = getCurrentUserInfo()
+            id_user = userInfo["id"]
+            is_admin = userInfo["role"] == "ROLE_ADMIN"
+            andSql = ""
+            if not is_admin:
+                andSql = " AND id_user='{0}'".format(id_user)
+                
             if id == None:
                 message = {
                     'status': 200,
@@ -69,8 +77,8 @@ def get_message_forum():
                 resp.status_code = 200
                 return resp
             else:
-                sql = "UPDATE {0}.comment_forum SET statut='0' WHERE id = {1} AND id_user={2}".format(
-                    db_name, id, id_user)
+                sql = "UPDATE {0}.comment_forum SET statut='0' WHERE id={1} {2}".format(
+                    db_name, id, andSql)
                 resp = delete(sql=sql)
                 return resp
         except Exception as e:
@@ -79,9 +87,10 @@ def get_message_forum():
 # Route pour modifier les like
 @message_forum_bp.route('/like', methods=['PUT'])
 @jwt_required()
-def update_profile():
-    id_user = getCurrentUserId()
-    
+def update_like():
+    userInfo = getCurrentUserInfo()
+    id_user = userInfo["id"]
+
     if not request.json:
         abort(400)
     try:

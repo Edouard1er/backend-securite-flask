@@ -18,7 +18,7 @@ def login():
         return jsonify({"msg": "Nom d'utilisateur manquant"}), 400
     if not password:
         return jsonify({"msg": "Mot de passe manquant"}), 400
-    sql = "SELECT u.id, u.email, u.name, u.imageUrl, u.filiere, u.promotion, u.pwd from utilisateur u WHERE login = '{0}'".format(login)
+    sql = "SELECT u.id, u.email, u.name, u.imageUrl, u.filiere, u.promotion, u.pwd, u.role from utilisateur u WHERE login = '{0}'".format(login)
     response = getOnlyData(sql)
     if(len(response) == 0 or not bcrypt.check_password_hash(response[0]["pwd"], password)):
         return jsonify({"msg": "Nom d'utilisateur ou mot de passe incorrect"}), 401
@@ -36,6 +36,7 @@ def login():
             "imageUrl" : response[0]["imageUrl"],
             "filiere" : response[0]["filiere"],
             "promotion" : response[0]["promotion"],
+            "is_admin": 1 if response[0]["role"] == "ROLE_ADMIN" else 0,
             "login" : login
         },
         "access_token" : access_token

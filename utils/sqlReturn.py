@@ -65,10 +65,11 @@ def update(sql):
         with cnx.cursor() as cursor:
             cursor.execute(sql)
             cnx.commit()
-            resp = jsonify(constant.requestRespond(
-                data=[],
-                m="Data updated successfully!", code=200))
-            resp.status_code = 200
+            if cursor.rowcount > 0:
+                resp = jsonify(constant.requestRespond(
+                    data=[],
+                    m="Data updated successfully!", code=200))
+                resp.status_code = 200
     finally:
         cursor.close()
     return resp
@@ -114,19 +115,24 @@ def delete(sql):
         with cnx.cursor() as cursor:
             cursor.execute(sql)
             cnx.commit()
-        resp = jsonify(constant.requestRespond(
-            data=[],
-            m="Data deleted successfully!", code=200))
-        resp.status_code = 200
+            if cursor.rowcount > 0:
+                resp = jsonify(constant.requestRespond(
+                    data=[],
+                    m="Data deleted successfully!", code=200))
+                resp.status_code = 200
     finally:
         cursor.close()
     return resp
 
-def getCurrentUserId():
+def getCurrentUserInfo():
     current = get_jwt_identity()
-    sql = "SELECT id FROM {0}.utilisateur WHERE login='{1}'".format(db_name, current)
+    sql = "SELECT id, role FROM {0}.utilisateur WHERE login='{1}'".format(db_name, current)
     id = getOnlyData(sql)
-    response = ""
+    response = {
+        "id": 0,
+        "role": ""
+    }
     if(len(id) == 1):
-        response = id[0]["id"]
+        response["id"] = id[0]["id"]
+        response["role"] = id[0]["role"]
     return response

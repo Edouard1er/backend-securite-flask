@@ -59,9 +59,10 @@ def get_forum():
             id_forum = _json['id']
             contenu = _json['contenu']
             code_categorie = _json['code_categorie']
-            id_user = _json['id_user']
+            userInfo = getCurrentUserInfo()
+            id_user = userInfo["id"]
             titre = _json['titre']
-            sql = "UPDATE {0}.forum SET contenu = '{2}', code_categorie = '{3}', id_user = '{4}', titre = '{5}' where id = {1}".format(
+            sql = "UPDATE {0}.forum SET contenu = '{2}', code_categorie = '{3}', titre = '{5}' where id = {1} AND id_user={4}".format(
                 db_name, id_forum, contenu, code_categorie, id_user, titre)
             resp = update(sql)
             return resp
@@ -71,7 +72,12 @@ def get_forum():
     if request.method == 'DELETE':
         try:
             id = flask.request.values.get('id')
-            id_user = getCurrentUserId()
+            userInfo = getCurrentUserInfo()
+            id_user = userInfo["id"]
+            is_admin = userInfo["role"] == "ROLE_ADMIN"
+            andSql = ""
+            if not is_admin:
+                andSql = " AND id_user='{0}'".format(id_user)
             if id == None:
                 message = {
                     'status': 200,
@@ -81,8 +87,8 @@ def get_forum():
                 resp.status_code = 200
                 return resp
             else:
-                sql = "UPDATE {0}.forum SET statut = '0' WHERE id = {1} AND id_user={2}".format(
-                    db_name, id, id_user)
+                sql = "UPDATE {0}.forum SET statut = '0' WHERE id={1} {2}".format(
+                    db_name, id, andSql)
                 resp = delete(sql=sql)
                 return resp
         except Exception as e:
@@ -91,8 +97,9 @@ def get_forum():
 # Route pour modifier les like
 @forum_bp.route('/like', methods=['PUT'])
 @jwt_required()
-def update_profile():
-    id_user = getCurrentUserId()
+def update_like():
+    userInfo = getCurrentUserInfo()
+    id_user = userInfo["id"]
     
     if not request.json:
         abort(400)

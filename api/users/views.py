@@ -169,3 +169,64 @@ def change_password():
 
     # Retourner une réponse de réussite
     return jsonify({'msg': 'Le mot de passe a été modifié avec succès'}), 200
+
+# Route pour modifier un utilisateur
+@users_bp.route('/admin', methods=['DELETE','PUT'])
+@jwt_required()
+def update_user():
+    userInfo = getCurrentUserInfo()
+    is_admin = userInfo["role"] == "ROLE_ADMIN"
+    if not is_admin:
+        return constant.resquestErrorResponse(msg="Vous n'avez pas les autorisations pour effectuer cette action", cd=403)
+    if request.method == 'PUT':
+        
+        if not request.json:
+            abort(400)
+        try:
+            _json = request.json
+            id = _json['id']
+            email = _json['email']
+            name = _json['name']
+            imageUrl = _json['imageUrl'] or ""
+            filiere = _json['filiere'] or ""
+            promotion = _json['promotion'] or ""
+            login = _json['login'] or ""
+            new_password = _json['pwd'] or ""
+            pays = _json['pays'] or ""
+            role = _json['role'] or ""
+            
+            # Vérifier que toutes les données sont présentes
+            if not login or not new_password or not role or not name:
+                return constant.resquestErrorResponse(msg="Tous les champs en * sont requis", cd=400)
+            
+            # Vérifier que le nouveau mot de passe respecte les exigences
+            password_regex = re.compile(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[^\w\s]).{8,}$')
+            if not password_regex.match(new_password):
+                return constant.resquestErrorResponse(msg="Le nouveau mot de passe doit contenir au moins 8 caractères dont au moins 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial", cd=400)
+            # Hacher le nouveau mot de passe
+            hashed_password = bcrypt.generate_password_hash(new_password).decode('utf-8')
+            sql = "UPDATE {0}.utilisateur SET email = '{1}', name = '{2}', imageUrl = '{3}', filiere = '{4}', promotion = '{5}', pwd='{7}', login='{8}', pays='{9}', role='{10}' where id = '{6}'".format(
+                db_name, email, name, imageUrl, filiere, promotion, id, hashed_password, login, pays, role)
+            resp = update(sql)
+            return resp
+        except Exception as e:
+            return constant.resquestErrorResponse(e)
+    
+    if request.method == 'DELETE':
+        try:
+            id = flask.request.values.get('id')
+            if id == None:
+                message = {
+                    'status': 200,
+                    'message': 'Please add ID',
+                }
+                resp = jsonify(message)
+                resp.status_code = 200
+                return resp
+            else:
+                sql = "UPDATE {0}.utilisateur SET statut = '0' WHERE id={1}".format(
+                    db_name, id)
+                resp = delete(sql=sql)
+                return resp
+        except Exception as e:
+            return constant.resquestErrorResponse(e)
