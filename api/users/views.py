@@ -81,13 +81,13 @@ def list_users():
     login = flask.request.values.get('login')
     
     if id == None and login == None:
-        sql = "SELECT u.id, u.email, u.name, u.imageUrl, u.filiere, u.promotion, u.login from {0}.utilisateur u WHERE u.statut='1'".format(
+        sql = "SELECT u.id, u.email, u.name, u.imageUrl, u.filiere, u.promotion, u.login, u.role, u.pays, u.online, createdAt from {0}.utilisateur u WHERE u.statut='1'".format(
         db_name)
     elif id == None and login != None:
-        sql = "SELECT u.id, u.email, u.name, u.imageUrl, u.filiere, u.promotion, u.login from {0}.utilisateur u WHERE u.login='{1}'".format(
+        sql = "SELECT u.id, u.email, u.name, u.imageUrl, u.filiere, u.promotion, u.login, u.role, u.pays, u.online, createdAt from {0}.utilisateur u WHERE u.login='{1}'".format(
         db_name, login)
     else:
-        sql = "SELECT u.id, u.email, u.name, u.imageUrl, u.filiere, u.promotion, u.login from {0}.utilisateur u WHERE u.id='{1}'".format(
+        sql = "SELECT u.id, u.email, u.name, u.imageUrl, u.filiere, u.promotion, u.login, u.role, u.pays, u.online, createdAt from {0}.utilisateur u WHERE u.id='{1}'".format(
         db_name, id)
     resp = requestSelect(sql=sql)
     return resp
