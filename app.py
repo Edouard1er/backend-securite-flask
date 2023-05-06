@@ -11,6 +11,7 @@ from api.admin import admin_bp
 from api.categorieForum import categorie_forum_bp
 from api.temoignage import temoignage_bp
 from api.friend import friend_bp
+from api.friendRequest import friend_request_bp
 
 from flask_jwt_extended import JWTManager
 from api.users import users_bp
@@ -39,6 +40,7 @@ app.register_blueprint(friend_bp, url_prefix='/api/friends')
 app.register_blueprint(message_forum_bp, url_prefix='/api/forum/comments')
 app.register_blueprint(categorie_forum_bp, url_prefix='/api/forum/categories')
 app.register_blueprint(admin_bp, url_prefix='/api/admin')
+app.register_blueprint(friend_request_bp, url_prefix='/api/friend/requests')
 
 
 @app.errorhandler(404)
