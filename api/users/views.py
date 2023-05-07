@@ -39,38 +39,63 @@ def create_user():
         database=db_name
     )
     
-    # Récupérez les données de l'utilisateur à partir de la requête
-    name = request.json.get('name')
-    email = request.json.get('email')
-    login = request.json.get('login')
-    password = request.json.get('password')
+    if not request.json:
+        abort(400)
+    try:
+        _json = request.json
+        
+        # Récupérez les données de l'utilisateur à partir de la requête
+        name = request.json.get('name')
+        login = request.json.get('login')
+        password = request.json.get('password')
+        email = ""
+        if "email" in _json:
+            email = _json["email"]
+        imageUrl = ""
+        if "imageUrl" in _json:
+            imageUrl = _json['imageUrl'] or ""
+        filiere = ""
+        if "filiere" in _json:
+            filiere = _json['filiere'] or ""
+        promotion = ""
+        if "promotion" in _json:
+            promotion = _json['promotion'] or ""
+        pays = ""
+        if "pays" in _json:
+            pays = _json['pays'] or ""
+        role = ""
+        if "role" in _json:
+            role = _json['role'] or ""
+        
+        # Vérifiez que toutes les données sont présentes
+        if not name or not email or not login or not password:
+            return resquestErrorResponse(msg="Tous les champs sont requis", cd=400)
+        # jsonify({'error': 'Tous les champs sont requis'}), 400
 
-    # Vérifiez que toutes les données sont présentes
-    if not name or not email or not login or not password:
-        return resquestErrorResponse(msg="Tous les champs sont requis", cd=400)
-    # jsonify({'error': 'Tous les champs sont requis'}), 400
+        # Vérifiez si l'utilisateur existe déjà dans la base de données
+        cursor = db.cursor()
+        cursor.execute("SELECT * FROM utilisateur WHERE login=%s", (login,))
+        user = cursor.fetchone()
+        if user:
+            return resquestErrorResponse(msg="Cet utilisateur existe déjà", cd=400)
+        # jsonify({'error': ''}), 400
 
-    # Vérifiez si l'utilisateur existe déjà dans la base de données
-    cursor = db.cursor()
-    cursor.execute("SELECT * FROM utilisateur WHERE login=%s", (login,))
-    user = cursor.fetchone()
-    if user:
-        return resquestErrorResponse(msg="Cet utilisateur existe déjà", cd=400)
-    # jsonify({'error': ''}), 400
+        # Hachez le mot de passe de l'utilisateur
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
-    # Hachez le mot de passe de l'utilisateur
-    hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+        # Ajoutez l'utilisateur à la base de données
+        cursor.execute("INSERT INTO utilisateur (name, email, login, pwd, imageUrl, pays, filiere, promotion, role) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                    (name, email, login, hashed_password, imageUrl, pays, filiere, promotion, role))
+        db.commit()
 
-    # Ajoutez l'utilisateur à la base de données
-    cursor.execute("INSERT INTO utilisateur (name, email, login, pwd) VALUES (%s, %s, %s, %s)",
-                   (name, email, login, hashed_password))
-    db.commit()
-
-    # Retournez les données de l'utilisateur créé
-    sql = "SELECT * from {0}.utilisateur where email = {1} and pwd ='{2}'".format(
-        db_name, email, hashed_password)
-    resp = requestSelect(sql=sql)
-    return resp
+        # Retournez les données de l'utilisateur créé
+        sql = "SELECT name, email, login,imageUrl, pays, filiere, promotion, role, createdAt from {0}.utilisateur where email = '{1}' and pwd ='{2}'".format(
+            db_name, email, hashed_password)
+        resp = requestSelect(sql=sql)
+        return resp
+    except Exception as e:
+        return constant.resquestErrorResponse(e)
+    
 
 
 # Route pour lister tous les utilisateurs
