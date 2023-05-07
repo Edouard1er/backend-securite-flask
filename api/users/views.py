@@ -184,29 +184,64 @@ def update_user():
             abort(400)
         try:
             _json = request.json
+            setSql = ""
             id = _json['id']
-            email = _json['email']
-            name = _json['name']
-            imageUrl = _json['imageUrl'] or ""
-            filiere = _json['filiere'] or ""
-            promotion = _json['promotion'] or ""
-            login = _json['login'] or ""
-            new_password = _json['pwd'] or ""
-            pays = _json['pays'] or ""
-            role = _json['role'] or ""
+            new_password = ""
             
-            # Vérifier que toutes les données sont présentes
-            if not login or not new_password or not role or not name:
-                return constant.resquestErrorResponse(msg="Tous les champs en * sont requis", cd=400)
+            if "email" in _json:
+                email = _json['email']
+                setSql = ", email='{0}'".format(email)
+                if not email or len(email) == 0:
+                    return constant.resquestErrorResponse(msg="Tous les champs en * sont requis", cd=400)
+            if "name" in _json:
+                name = _json['name']
+                setSql += ", name='{0}'".format(name)
+                if not name or len(name) == 0:
+                    return constant.resquestErrorResponse(msg="Tous les champs en * sont requis", cd=400)
+            if "imageUrl" in _json:
+                imageUrl = _json['imageUrl'] or ""
+                setSql += ", imageUrl='{0}'".format(imageUrl)
+            if "filiere" in _json:
+                filiere = _json['filiere'] or ""
+                setSql += ", filiere='{0}'".format(filiere)
+            if "promotion" in _json:
+                promotion = _json['promotion'] or ""
+                setSql += ", promotion='{0}'".format(promotion) 
+            if "login" in _json:
+                login = _json['login'] or ""
+                setSql += ", login='{0}'".format(login)
+                if not login or len(login) == 0:
+                    return constant.resquestErrorResponse(msg="Tous les champs en * sont requis", cd=400)
+            if "pwd" in _json:
+                new_password = _json['pwd']
+                if not new_password or len(new_password) == 0:
+                    return constant.resquestErrorResponse(msg="Tous les champs en * sont requis", cd=400)
+            elif "password" in _json:
+                new_password = _json['password']
+                if not new_password or len(new_password) == 0:
+                    return constant.resquestErrorResponse(msg="Tous les champs en * sont requis", cd=400)
+            if "pays" in _json:
+                pays = _json['pays'] or ""
+                setSql += ", pays='{0}'".format(pays)
+            if "role" in _json:
+                role = _json['role'] or ""
+                setSql += ", role='{0}'".format(role)
+                if not role or len(role) == 0:
+                    return constant.resquestErrorResponse(msg="Tous les champs en * sont requis", cd=400)
             
-            # Vérifier que le nouveau mot de passe respecte les exigences
-            password_regex = re.compile(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[^\w\s]).{8,}$')
-            if not password_regex.match(new_password):
-                return constant.resquestErrorResponse(msg="Le nouveau mot de passe doit contenir au moins 8 caractères dont au moins 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial", cd=400)
-            # Hacher le nouveau mot de passe
-            hashed_password = bcrypt.generate_password_hash(new_password).decode('utf-8')
-            sql = "UPDATE {0}.utilisateur SET email = '{1}', name = '{2}', imageUrl = '{3}', filiere = '{4}', promotion = '{5}', pwd='{7}', login='{8}', pays='{9}', role='{10}' where id = '{6}'".format(
-                db_name, email, name, imageUrl, filiere, promotion, id, hashed_password, login, pays, role)
+            
+            if "pwd" in _json or "password" in _json:
+                # Vérifier que le nouveau mot de passe respecte les exigences
+                password_regex = re.compile(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[^\w\s]).{8,}$')
+                if not password_regex.match(new_password):
+                    return constant.resquestErrorResponse(msg="Le nouveau mot de passe doit contenir au moins 8 caractères dont au moins 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial", cd=400)
+                # Hacher le nouveau mot de passe
+                hashed_password = bcrypt.generate_password_hash(new_password).decode('utf-8')
+                if(len(hashed_password) > 0):
+                    setSql += ", pwd='{0}'".format(hashed_password)
+            
+            sql = "UPDATE {0}.utilisateur SET id = '{1}' {2} WHERE id = '{1}'".format(
+                db_name, id, setSql )
             resp = update(sql)
             return resp
         except Exception as e:
