@@ -130,3 +130,17 @@ def refused():
         return resp
     except Exception as e:
         return constant.resquestErrorResponse(e)
+    
+@friend_request_bp.route('/invitation', methods=['GET'])
+@jwt_required()
+def get_invit():
+    try:
+        userInfo = getCurrentUserInfo()
+        id_user = userInfo["id"]
+        
+        sql = "SELECT COUNT(fr.id) AS invitations FROM {0}.friend_request fr WHERE fr.receiver={1} AND fr.statut='SENT' GROUP BY fr.receiver".format(
+            db_name, id_user )
+        resp = requestSelect(sql)
+        return resp
+    except Exception as e:
+        return constant.resquestErrorResponse(e)

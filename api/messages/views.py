@@ -102,3 +102,17 @@ def get_discussion_list():
         return resp
     except Exception as e:
         return constant.resquestErrorResponse(e)
+    
+@messages_bp.route('/not_read', methods=['GET'])
+@jwt_required()
+def get_not_read():
+    try:
+        userInfo = getCurrentUserInfo()
+        id_user = userInfo["id"]
+        
+        sql = "SELECT COUNT(m.id) AS message_not_read FROM {0}.message m WHERE m.read=0 AND m.idRecepteur={1} AND m.statut=1 GROUP BY m.idRecepteur".format(
+            db_name, id_user )
+        resp = requestSelect(sql)
+        return resp
+    except Exception as e:
+        return constant.resquestErrorResponse(e)

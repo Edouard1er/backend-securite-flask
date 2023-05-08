@@ -27,16 +27,6 @@ def login():
     sql = "UPDATE {0}.utilisateur SET online='1' WHERE login = '{1}'".format(
         db_name, login)
     update(sql=sql)
-    messageSql = "SELECT COUNT(m.id) AS message_not_read FROM {0}.message m WHERE m.read=0 AND m.idRecepteur={1} AND m.statut=1 GROUP BY m.idRecepteur".format(
-        db_name, response[0]["id"]
-    )
-    messageResponse = getOnlyData(messageSql)
-    
-    invitaionSql = "SELECT COUNT(fr.id) AS invitations FROM {0}.friend_request fr WHERE fr.receiver={1} AND fr.statut='SENT' GROUP BY fr.receiver".format(
-        db_name, response[0]["id"]
-    )
-    invitaionResponse = getOnlyData(invitaionSql)
-    
     
     retour = {
         "utilisateur" : {
@@ -47,9 +37,7 @@ def login():
             "filiere" : response[0]["filiere"],
             "promotion" : response[0]["promotion"],
             "is_admin": 1 if response[0]["role"] == "ROLE_ADMIN" else 0,
-            "login" : login,
-            "message_not_read" : messageResponse[0]["message_not_read"],
-            "invitations" : invitaionResponse[0]["invitations"]
+            "login" : login
         },
         "access_token" : access_token
     }   
