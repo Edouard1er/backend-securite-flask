@@ -88,3 +88,17 @@ def update_messages_read():
         return resp
     except Exception as e:
         return constant.resquestErrorResponse(e)
+    
+@messages_bp.route('/discussion', methods=['GET'])
+@jwt_required()
+def get_discussion_list():
+    try:
+        userInfo = getCurrentUserInfo()
+        id_user = userInfo["id"]
+        
+        sql = "SELECT u.online, u.email, u.name, u.imageUrl, u.filiere, u.promotion, u.login, u.pays, u.role, IF(m.idEmeteur = {1}, m.idRecepteur, m.idEmeteur) AS id_user, MAX(m.time) AS last_message_time FROM  {0}.message m JOIN {0}.utilisateur u ON u.id = IF(m.idEmeteur = {1}, m.idRecepteur, m.idEmeteur) WHERE  m.idEmeteur = {1} OR m.idRecepteur = {1} GROUP BY  IF(m.idEmeteur = {1}, m.idRecepteur, m.idEmeteur) ORDER BY  last_message_time DESC".format(
+            db_name, id_user )
+        resp = requestSelect(sql)
+        return resp
+    except Exception as e:
+        return constant.resquestErrorResponse(e)
