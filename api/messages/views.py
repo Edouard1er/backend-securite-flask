@@ -96,7 +96,7 @@ def get_discussion_list():
         userInfo = getCurrentUserInfo()
         id_user = userInfo["id"]
         
-        sql = "SELECT u.online, u.email, u.name, u.imageUrl, u.filiere, u.promotion, u.login, u.pays, u.role, IF(m.idEmeteur = {1}, m.idRecepteur, m.idEmeteur) AS id_user, MAX(m.time) AS last_message_time FROM  {0}.message m JOIN {0}.utilisateur u ON u.id = IF(m.idEmeteur = {1}, m.idRecepteur, m.idEmeteur) WHERE  m.idEmeteur = {1} OR m.idRecepteur = {1} GROUP BY  IF(m.idEmeteur = {1}, m.idRecepteur, m.idEmeteur) ORDER BY  last_message_time DESC".format(
+        sql = "SELECT u.online, u.email, u.name, u.imageUrl, u.filiere, u.promotion, u.login, u.pays, u.role, IF(m.idEmeteur = {1}, m.idRecepteur, m.idEmeteur) AS id_user, MAX(m.time) AS last_message_time, SUM(CASE WHEN m.read = 0 AND m.idRecepteur={1} THEN 1 ELSE 0 END) as unread_count FROM  {0}.message m JOIN {0}.utilisateur u ON u.id = IF(m.idEmeteur = {1}, m.idRecepteur, m.idEmeteur) WHERE  m.idEmeteur = {1} OR m.idRecepteur = {1} GROUP BY  IF(m.idEmeteur = {1}, m.idRecepteur, m.idEmeteur) ORDER BY  last_message_time DESC".format(
             db_name, id_user )
         resp = requestSelect(sql)
         return resp

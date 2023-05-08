@@ -18,7 +18,7 @@ def login():
         return jsonify({"msg": "Nom d'utilisateur manquant"}), 400
     if not password:
         return jsonify({"msg": "Mot de passe manquant"}), 400
-    sql = "SELECT u.id, u.email, u.name, u.imageUrl, u.filiere, u.promotion, u.pwd, u.role from utilisateur u WHERE login = '{0}'".format(login)
+    sql = "SELECT u.id, u.email, u.name, u.imageUrl, u.filiere, u.promotion, u.pwd, u.role from utilisateur u LEFT JOIN message m ON (m.idRecepteur=u.id AND m.read=0) LEFT JOIN friend_request fr ON (u.id=fr.receiver AND fr.statut='SENT') WHERE login = '{0}'".format(login)
     response = getOnlyData(sql)
     if(len(response) == 0 or not bcrypt.check_password_hash(response[0]["pwd"], password)):
         return jsonify({"msg": "Nom d'utilisateur ou mot de passe incorrect"}), 401
@@ -27,6 +27,16 @@ def login():
     sql = "UPDATE {0}.utilisateur SET online='1' WHERE login = '{1}'".format(
         db_name, login)
     update(sql=sql)
+    messageSql = "SELECT COUNT(m.id) AS message_not_read FROM {0}.message m WHERE m.read=0 AND m.idRecepteur={1} AND m.statut=1 GROUP BY m.idRecepteur".format(
+        db_name, response[0]["id"]
+    )
+    messageResponse = getOnlyData(messageSql)
+    
+    invitaionSql = "SELECT COUNT(fr.id) AS invitations FROM {0}.friend_request fr WHERE fr.receiver={1} AND fr.statut='SENT' GROUP BY fr.receiver".format(
+        db_name, response[0]["id"]
+    )
+    invitaionResponse = getOnlyData(invitaionSql)
+    
     
     retour = {
         "utilisateur" : {
@@ -37,7 +47,9 @@ def login():
             "filiere" : response[0]["filiere"],
             "promotion" : response[0]["promotion"],
             "is_admin": 1 if response[0]["role"] == "ROLE_ADMIN" else 0,
-            "login" : login
+            "login" : login,
+            "message_not_read" : messageResponse[0]["message_not_read"],
+            "invitations" : invitaionResponse[0]["invitations"]
         },
         "access_token" : access_token
     }   
