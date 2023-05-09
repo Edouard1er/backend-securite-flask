@@ -70,6 +70,12 @@ def update(sql):
                     data=[],
                     m="Data updated successfully!", code=200))
                 resp.status_code = 200
+            else:
+                resp = jsonify(constant.requestRespond(
+                    data=[],
+                    m="No update!", code=-1))
+                resp.status_code = 200
+                
     finally:
         cursor.close()
     return resp
