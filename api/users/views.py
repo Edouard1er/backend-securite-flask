@@ -1,7 +1,7 @@
 
 from utils.constant import *
 from . import users_bp
-from flask import jsonify, request
+from flask import jsonify, request, send_from_directory,render_template_string
 from flask_bcrypt import Bcrypt
 from config.config import Config, db_name
 from utils.sqlReturn import *
@@ -14,6 +14,7 @@ import mysql.connector
 
 from dotenv import load_dotenv
 import os
+import base64
 
 # Charger les variables d'environnement depuis le fichier .env
 load_dotenv()
@@ -290,3 +291,14 @@ def update_user():
                 return resp
         except Exception as e:
             return constant.resquestErrorResponse(e)
+
+@users_bp.route('/view/<path:filename>', methods=['GET', 'POST', 'DELETE', 'PUT'])
+@jwt_required()
+def get_file(filename):
+    ready_directory = "images"
+    # return send_from_directory(ready_directory, filename)
+    with open(ready_directory+"/"+filename, 'rb') as image_file:
+        encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+        html = f'<img src="data:image/jpeg;base64,{encoded_string}"/>'
+        # ajouter une nouvelle ligne
+    return render_template_string(html)
