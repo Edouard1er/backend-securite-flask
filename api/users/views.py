@@ -51,7 +51,7 @@ def create_user():
         email = ""
         if "email" in _json:
             email = _json["email"]
-        imageUrl = ""
+        imageUrl = None
         if "imageUrl" in _json:
             imageUrl = _json['imageUrl'] or ""
         filiere = ""
@@ -84,8 +84,8 @@ def create_user():
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
         # Ajoutez l'utilisateur à la base de données
-        cursor.execute("INSERT INTO utilisateur (name, email, login, pwd, imageUrl, pays, filiere, promotion, role) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                    (name, email, login, hashed_password, imageUrl, pays, filiere, promotion, role))
+        cursor.execute("INSERT INTO utilisateur (name, email, login, pwd, pays, filiere, promotion, role) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+                    (name, email, login, hashed_password, pays, filiere, promotion, role))
         db.commit()
 
         # Retournez les données de l'utilisateur créé
